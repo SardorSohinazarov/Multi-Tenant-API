@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shop.Domain.Entities;
-using Shop.Infrastructure;
 
-namespace Marketplace.API
+namespace Shop.Infrastructure
 {
     public class ShopDbContext : DbContext
     {

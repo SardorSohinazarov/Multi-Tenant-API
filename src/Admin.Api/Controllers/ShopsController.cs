@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Admin.Application.Services.Shops;
 using Admin.Domain.Entities;
-using Marketplace.API;
+using Shop.Infrastructure;
 
 namespace Admin.Api.Controllers
 {

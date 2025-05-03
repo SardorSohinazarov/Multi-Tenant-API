@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Common.Paginations.Models;
 using Common.Paginations.Extensions;
 using Common.ServiceAttribute;
-using Marketplace.API;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Shop.Domain.Entities;
+using Shop.Infrastructure;
 
 namespace Shop.Application.Services.Products
 {

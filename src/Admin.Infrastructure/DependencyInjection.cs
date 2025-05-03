@@ -6,7 +6,7 @@ namespace Admin.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAdminInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ShopContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("AdminDb")));
