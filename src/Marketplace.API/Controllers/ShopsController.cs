@@ -14,9 +14,11 @@ namespace Controllers
     public class ShopsController : ControllerBase
     {
         private readonly IShopsService _shopsService;
-        public ShopsController(IShopsService shopsService)
+        private readonly IConfiguration _configuration;
+        public ShopsController(IShopsService shopsService, IConfiguration configuration)
         {
             _shopsService = shopsService;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -30,9 +32,11 @@ namespace Controllers
             try
             {
                 var optionsBuilder = new DbContextOptionsBuilder<ShopDbContext>();
-                optionsBuilder.UseNpgsql(newShop.ConnectionString);
+                optionsBuilder.UseNpgsql(newShop.Schema);
 
-                using var dbContext = new ShopDbContext(newShop.ConnectionString); // qulaylik uchun overload constructor
+                using var dbContext = new ShopDbContext(newShop.Schema, _configuration.GetConnectionString("MasterDb")); // qulaylik uchun overload constructor
+                
+                await dbContext.AddSchemaAsync(newShop.Schema);
                 await dbContext.Database.MigrateAsync();
             }
             catch(Exception ex)

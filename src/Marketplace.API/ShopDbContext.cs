@@ -1,19 +1,23 @@
 ﻿using Marketplace.API.Entities;
+using Marketplace.API.Exceptions;
 using Marketplace.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Npgsql;
 
 namespace Marketplace.API
 {
     public class ShopDbContext : DbContext
     {
         private TenantContext? _tenantContext;
-        private readonly string? _connectionString;
+        private readonly string? _schema;
         private readonly IConfiguration _configuration;
+        private readonly string _connectionString;
         private readonly IServiceProvider? _serviceProvider;
 
-        public ShopDbContext(string connectionString)
+        public ShopDbContext(string schema, string connectionString)
         {
+            _schema = schema;
             _connectionString = connectionString;
         }
 
@@ -30,15 +34,29 @@ namespace Marketplace.API
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (_tenantContext?.CurrentShop != null)
-            {
-                optionsBuilder.UseNpgsql(_tenantContext.CurrentShop.ConnectionString);
-            }
+            var connectionString = _configuration.GetConnectionString("MasterDb") ?? _connectionString;
+            optionsBuilder.UseNpgsql(connectionString);
+        }
 
-            if (!string.IsNullOrEmpty(_connectionString))
-            {
-                optionsBuilder.UseNpgsql(_connectionString);
-            }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var schema = _tenantContext?.CurrentShop.Schema ?? _schema ?? throw new NotFoundException();
+            modelBuilder.HasDefaultSchema(schema);
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public async Task AddSchemaAsync(string schema)
+        {
+            var connectionString = _configuration.GetConnectionString("MasterDb") ?? _connectionString;
+
+            await using var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            var commandText = $"CREATE SCHEMA IF NOT EXISTS \"{schema}\";";
+
+            await using var command = new NpgsqlCommand(commandText, connection);
+            await command.ExecuteNonQueryAsync();
         }
 
         public DbSet<Product> Products { get; set; }

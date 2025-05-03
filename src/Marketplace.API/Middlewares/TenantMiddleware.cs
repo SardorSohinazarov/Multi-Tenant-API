@@ -18,9 +18,6 @@ namespace Marketplace.API.Middlewares
             var host = context.Request.Host.ToString();
             var shop = await shopContext.Shops.FirstOrDefaultAsync(s => s.Domain == host);
 
-            if (shop == null)
-                throw new NotFoundException();
-
             tenantContext.CurrentShop = shop;
             await _next(context);
         }
