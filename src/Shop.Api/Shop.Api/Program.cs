@@ -19,6 +19,8 @@ builder.Services.AddShopInfrastructure(builder.Configuration);
 builder.Services.AddDbContext<ShopContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AdminDb")));
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,7 +1,7 @@
 using System.Net;
 using Common;
 using System.Text.Json;
-using Marketplace.API.Exceptions;
+using Admin.Domain.Exceptions;
 
 namespace Middlewares
 {

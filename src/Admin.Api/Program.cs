@@ -17,6 +17,8 @@ builder.Services.AddAdminInfrastructure(builder.Configuration);
 // Shop
 builder.Services.AddDbContext<ShopDbContext>();
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

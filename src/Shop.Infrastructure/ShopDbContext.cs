@@ -17,7 +17,7 @@ namespace Shop.Infrastructure
             _schema = schema;
         }
 
-        public ShopDbContext(IConfiguration configuration, IServiceProvider? serviceProvider)
+        public ShopDbContext(IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _configuration = configuration;
             _serviceProvider = serviceProvider;
@@ -37,7 +37,7 @@ namespace Shop.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var schema = _tenantContext.CurrentShop?.Schema ?? _schema;
+            var schema = _tenantContext.CurrentShop?.Schema ?? _schema ?? "public";
             modelBuilder.HasDefaultSchema(schema);
 
             base.OnModelCreating(modelBuilder);
