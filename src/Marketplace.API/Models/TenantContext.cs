@@ -1,4 +1,6 @@
-﻿namespace Marketplace.API.Models
+﻿using Marketplace.API.Entities;
+
+namespace Marketplace.API.Models
 {
     public class TenantContext
     {

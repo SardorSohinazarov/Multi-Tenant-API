@@ -5,7 +5,7 @@ using Common.Paginations.Models;
 using Common.Paginations.Extensions;
 using Common.ServiceAttribute;
 using Marketplace.API;
-using Marketplace.API.Models;
+using Marketplace.API.Entities;
 
 namespace Services.Shops
 {

@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Shops;
 using Common.Paginations.Models;
 using Common;
-using Marketplace.API.Models;
 using Marketplace.API;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Marketplace.API.Entities;
 
 namespace Controllers
 {

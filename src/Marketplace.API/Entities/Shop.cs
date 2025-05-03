@@ -1,4 +1,4 @@
-﻿namespace Marketplace.API.Models
+﻿namespace Marketplace.API.Entities
 {
     public class Shop
     {

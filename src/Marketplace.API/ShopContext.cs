@@ -1,4 +1,4 @@
-﻿using Marketplace.API.Models;
+﻿using Marketplace.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Marketplace.API
