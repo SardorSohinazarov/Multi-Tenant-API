@@ -3,6 +3,9 @@ using Services.Shops;
 using Common.Paginations.Models;
 using Common;
 using Marketplace.API.Models;
+using Marketplace.API;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Controllers
 {
@@ -19,7 +22,26 @@ namespace Controllers
         [HttpPost]
         public async Task<Result<Shop>> AddAsync(Shop shop)
         {
-            return Result<Shop>.Success(await _shopsService.AddAsync(shop));
+            var newShop = await _shopsService.AddAsync(shop);
+            if(newShop == null)
+                return Result<Shop>.Fail("Failed to create shop.");
+
+            #region Shop dbContext migration
+            try
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<ShopDbContext>();
+                optionsBuilder.UseNpgsql(newShop.ConnectionString);
+
+                using var dbContext = new ShopDbContext(newShop.ConnectionString); // qulaylik uchun overload constructor
+                await dbContext.Database.MigrateAsync();
+            }
+            catch(Exception ex)
+            {
+                throw new Exception($"Shop yaratildi lekin baza yaratilmay qoldi. \n(shop: {JsonSerializer.Serialize(newShop)}).");
+            }
+            #endregion
+
+            return Result<Shop>.Success(newShop);
         }
 
         [HttpGet]

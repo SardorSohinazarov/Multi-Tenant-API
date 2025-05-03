@@ -2,15 +2,20 @@
 using Marketplace.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Marketplace.API
 {
     public class ShopDbContext : DbContext
     {
         private TenantContext? _tenantContext;
+        private readonly string? _connectionString;
         private readonly IConfiguration _configuration;
         private readonly IServiceProvider? _serviceProvider;
+
+        public ShopDbContext(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
 
         public ShopDbContext(IConfiguration configuration, IServiceProvider? serviceProvider)
         {
@@ -29,9 +34,10 @@ namespace Marketplace.API
             {
                 optionsBuilder.UseNpgsql(_tenantContext.CurrentShop.ConnectionString);
             }
-            else
+
+            if (!string.IsNullOrEmpty(_connectionString))
             {
-                optionsBuilder.UseNpgsql(_configuration.GetConnectionString("SardorDb"));
+                optionsBuilder.UseNpgsql(_connectionString);
             }
         }
 
