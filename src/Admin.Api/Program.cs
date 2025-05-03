@@ -1,5 +1,6 @@
 using Admin.Infrastructure;
 using Admin.Application;
+using Shop.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddAdminInfrastructure(builder.Configuration);
+
+// Shop
+builder.Services.AddDbContext<ShopDbContext>();
 
 var app = builder.Build();
 

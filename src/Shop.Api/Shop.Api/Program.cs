@@ -1,3 +1,5 @@
+using Admin.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Shop.Application;
 using Shop.Infrastructure;
 
@@ -12,6 +14,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddShopInfrastructure(builder.Configuration);
+
+// TenantContext
+builder.Services.AddDbContext<ShopContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AdminDb")));
 
 var app = builder.Build();
 
