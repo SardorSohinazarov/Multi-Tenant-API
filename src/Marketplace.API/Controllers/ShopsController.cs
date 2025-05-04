@@ -15,10 +15,12 @@ namespace Controllers
     {
         private readonly IShopsService _shopsService;
         private readonly IConfiguration _configuration;
-        public ShopsController(IShopsService shopsService, IConfiguration configuration)
+        private readonly ShopContext _shopContext;
+        public ShopsController(IShopsService shopsService, IConfiguration configuration, ShopContext shopContext)
         {
             _shopsService = shopsService;
             _configuration = configuration;
+            _shopContext = shopContext;
         }
 
         [HttpPost]
@@ -28,19 +30,13 @@ namespace Controllers
             if(newShop == null)
                 return Result<Shop>.Fail("Failed to create shop.");
 
+            // Migrate
             #region Shop dbContext migration
             try
             {
-                var optionsBuilder = new DbContextOptionsBuilder<ShopDbContext>();
-                optionsBuilder.UseNpgsql(newShop.Schema);
-
-                using var dbContext = new ShopDbContext(newShop.Schema, _configuration.GetConnectionString("MasterDb")); // qulaylik uchun overload constructor
-                
-                await dbContext.AddSchemaAsync(newShop.Schema);
-                
-                await dbContext.Database.MigrateAsync();
+                await _shopContext.ApplyDbMigrationsAsync(_configuration);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception($"Shop yaratildi lekin baza yaratilmay qoldi. \n(shop: {JsonSerializer.Serialize(newShop)}).");
             }

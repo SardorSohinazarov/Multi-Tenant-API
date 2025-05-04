@@ -19,7 +19,7 @@ namespace Marketplace.API.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Domain = table.Column<string>(type: "text", nullable: false),
-                    ConnectionString = table.Column<string>(type: "text", nullable: false)
+                    Schema = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

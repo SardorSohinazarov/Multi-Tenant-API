@@ -1,18 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Marketplace.API.Models;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Marketplace.API.Migrations.ShopDb
+namespace Marketplace.API.Migrations.Shops
 {
     /// <inheritdoc />
     public partial class Init : Migration
     {
+        private readonly string _schema;
+        public Init(string schema)
+        {
+            _schema = schema;
+        }
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: _schema);
+
             migrationBuilder.CreateTable(
                 name: "Products",
+                schema: _schema,
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -30,7 +41,8 @@ namespace Marketplace.API.Migrations.ShopDb
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Products",
+                schema: _schema);
         }
     }
 }

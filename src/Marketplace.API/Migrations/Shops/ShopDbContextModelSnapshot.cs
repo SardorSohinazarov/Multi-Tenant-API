@@ -2,20 +2,17 @@
 using Marketplace.API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Marketplace.API.Migrations
+namespace Marketplace.API.Migrations.Shops
 {
-    [DbContext(typeof(ShopContext))]
-    [Migration("20250503090255_Init")]
-    partial class Init
+    [DbContext(typeof(ShopDbContext))]
+    partial class ShopDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,7 +21,7 @@ namespace Marketplace.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Marketplace.API.Models.Shop", b =>
+            modelBuilder.Entity("Marketplace.API.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,21 +29,16 @@ namespace Marketplace.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ConnectionString")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Domain")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Shops");
+                    b.ToTable("Products", "public");
                 });
 #pragma warning restore 612, 618
         }

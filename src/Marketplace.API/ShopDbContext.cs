@@ -3,7 +3,7 @@ using Marketplace.API.Exceptions;
 using Marketplace.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Npgsql;
+using System.Reflection;
 
 namespace Marketplace.API
 {
@@ -12,75 +12,78 @@ namespace Marketplace.API
         private TenantContext? _tenantContext;
         private readonly string? _schema;
         private readonly IConfiguration _configuration;
-        private readonly string _connectionString;
-        private readonly IServiceProvider? _serviceProvider;
 
-        public ShopDbContext(string schema, string connectionString)
+        public ShopDbContext(IConfiguration configuration, DbContextOptions<ShopDbContext> options)
+        : base(options)
+        {
+            _schema = "public";
+
+            _configuration = configuration;
+        }
+
+        public ShopDbContext(IConfiguration configuration, string schema)
         {
             _schema = schema;
-            _connectionString = connectionString;
+            _configuration = configuration;
         }
 
-        public ShopDbContext(IConfiguration configuration, IServiceProvider? serviceProvider)
+        public ShopDbContext(IConfiguration configuration, TenantContext tenantContext)
         {
             _configuration = configuration;
-            _serviceProvider = serviceProvider;
-
-            if (_serviceProvider != null)
-            {
-                _tenantContext = _serviceProvider.GetService<TenantContext>();
-            }
+            _tenantContext = tenantContext;
         }
+
+        public DbSet<Product> Products { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = _configuration.GetConnectionString("MasterDb") ?? _connectionString;
+            var connectionString = _configuration.GetConnectionString("ShopDb");
             optionsBuilder.UseNpgsql(connectionString);
+
+            optionsBuilder.UseNpgsql(
+                connectionString,
+                x => x.MigrationsHistoryTable("_migrations", _schema)
+            );
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var schema = _tenantContext?.CurrentShop.Schema ?? _schema ?? throw new NotFoundException();
+            var schema = _tenantContext?.CurrentShop.Schema ?? _schema ?? "public";
 
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+
+            modelBuilder.Entity<Product>(x =>
             {
-                var a = entityType.GetSchema();
-                entityType.SetSchema(schema);
-            }
+                x.Metadata.SetSchema(schema);
+            });
+
+            // hamma entitylar uchun
+            //foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            //{
+            //    var a = entityType.GetSchema();
+            //    entityType.SetSchema(schema);
+            //}
 
             base.OnModelCreating(modelBuilder);
         }
-
-        public async Task AddSchemaAsync(string schema)
-        {
-            var connectionString = _configuration.GetConnectionString("MasterDb") ?? _connectionString;
-
-            await using var connection = new NpgsqlConnection(connectionString);
-            await connection.OpenAsync();
-
-            var commandText = $"CREATE SCHEMA IF NOT EXISTS \"{schema}\";";
-
-            await using var command = new NpgsqlCommand(commandText, connection);
-            await command.ExecuteNonQueryAsync();
-        }
-
-        public DbSet<Product> Products { get; set; }
     }
 
-    public class ShopDbContextFactory : IDesignTimeDbContextFactory<ShopDbContext>
-    {
-        public ShopDbContext CreateDbContext(string[] args)
-        {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
+    //public class ShopDbContextFactory : IDesignTimeDbContextFactory<ShopDbContext>
+    //{
+    //    public ShopDbContext CreateDbContext(string[] args)
+    //    {
+    //        var configuration = new ConfigurationBuilder()
+    //            .SetBasePath(Directory.GetCurrentDirectory())
+    //            .AddJsonFile("appsettings.json")
+    //            .Build();
 
-            var optionsBuilder = new DbContextOptionsBuilder<ShopDbContext>();
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("SardorDb"));
+    //        // Dizayn vaqti uchun schema nomini qo‘lda belgilang
+    //        var schema = "public";
 
-            // Design-time uchun serviceProvider va tenantContext kerak emas
-            return new ShopDbContext(configuration, null);
-        }
-    }
+    //        return new ShopDbContext(schema)
+    //        {
+    //            // _configuration qiymati konstruktor orqali emas, OnConfiguring orqali ishlatiladi
+    //        };
+    //    }
+    //}
 }

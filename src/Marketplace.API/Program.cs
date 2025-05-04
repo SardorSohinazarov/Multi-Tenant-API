@@ -2,7 +2,6 @@ using Common.ServiceAttribute;
 using Marketplace.API;
 using Marketplace.API.Middlewares;
 using Marketplace.API.Models;
-using Microsoft.EntityFrameworkCore;
 using Middlewares;
 using System.Reflection;
 
@@ -15,10 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ShopContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("MasterDb")));
-
-builder.Services.AddDbContext<ShopDbContext>();
+builder.Services.AddDataContexts();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
@@ -36,6 +32,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.ApplyDbMigrations();
 
 app.UseExceptionHandlingMiddleware();
 app.UseMiddleware<ShopMiddleware>();

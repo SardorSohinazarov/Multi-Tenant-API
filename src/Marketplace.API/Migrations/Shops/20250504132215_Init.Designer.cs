@@ -8,10 +8,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Marketplace.API.Migrations.ShopDb
+namespace Marketplace.API.Migrations.Shops
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20250503091535_Init")]
+    [Migration("20250504132215_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace Marketplace.API.Migrations.ShopDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", "public");
                 });
 #pragma warning restore 612, 618
         }
