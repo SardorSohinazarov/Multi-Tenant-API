@@ -37,6 +37,7 @@ namespace Controllers
                 using var dbContext = new ShopDbContext(newShop.Schema, _configuration.GetConnectionString("MasterDb")); // qulaylik uchun overload constructor
                 
                 await dbContext.AddSchemaAsync(newShop.Schema);
+                
                 await dbContext.Database.MigrateAsync();
             }
             catch(Exception ex)

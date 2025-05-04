@@ -41,7 +41,12 @@ namespace Marketplace.API
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var schema = _tenantContext?.CurrentShop.Schema ?? _schema ?? throw new NotFoundException();
-            modelBuilder.HasDefaultSchema(schema);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var a = entityType.GetSchema();
+                entityType.SetSchema(schema);
+            }
 
             base.OnModelCreating(modelBuilder);
         }
