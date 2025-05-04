@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Api", "src\Shop.Api\Sh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Application", "src\Shop.Application\Shop.Application.csproj", "{6531D9B4-AB7F-4BCC-A4FA-A337ED79FEAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChocolateStores", "src\ChocolateStores\ChocolateStores.csproj", "{8A8528B5-B827-4ABA-B3ED-9EB4A2B5210C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,10 +65,6 @@ Global
 		{6531D9B4-AB7F-4BCC-A4FA-A337ED79FEAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6531D9B4-AB7F-4BCC-A4FA-A337ED79FEAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6531D9B4-AB7F-4BCC-A4FA-A337ED79FEAB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A8528B5-B827-4ABA-B3ED-9EB4A2B5210C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A8528B5-B827-4ABA-B3ED-9EB4A2B5210C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A8528B5-B827-4ABA-B3ED-9EB4A2B5210C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A8528B5-B827-4ABA-B3ED-9EB4A2B5210C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +79,5 @@ Global
 		{7F4B6EF0-A0A7-4120-9375-E4D06835B828} = {ED306B7E-AD66-431E-9FFE-2240BA760FE9}
 		{A8B65CE6-0195-4676-B87B-63096A54D324} = {ED306B7E-AD66-431E-9FFE-2240BA760FE9}
 		{6531D9B4-AB7F-4BCC-A4FA-A337ED79FEAB} = {ED306B7E-AD66-431E-9FFE-2240BA760FE9}
-		{8A8528B5-B827-4ABA-B3ED-9EB4A2B5210C} = {ED306B7E-AD66-431E-9FFE-2240BA760FE9}
 	EndGlobalSection
 EndGlobal
