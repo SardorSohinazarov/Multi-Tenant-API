@@ -6,6 +6,7 @@ using Admin.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using AutoMapper;
 using Admin.Domain.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace Admin.Application.Services.Shops
 {
@@ -15,15 +16,27 @@ namespace Admin.Application.Services.Shops
         private readonly ShopContext _shopContext;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContext;
-        public ShopsService(ShopContext shopContext, IMapper mapper, IHttpContextAccessor httpContext)
+        private readonly IConfiguration _configuration;
+        public ShopsService(
+            ShopContext shopContext,
+            IMapper mapper,
+            IHttpContextAccessor httpContext,
+            IConfiguration configuration)
         {
             _shopContext = shopContext;
             _mapper = mapper;
             _httpContext = httpContext;
+            _configuration = configuration;
         }
 
         public async Task<ShopConfig> AddAsync(ShopConfig shop)
         {
+            var newConnectionString = string.IsNullOrWhiteSpace(shop.ConnectionString) 
+                    ? _configuration.GetConnectionString("ShopNewDb").Replace("{{NewDb}}", shop.Name) 
+                    : shop.ConnectionString;
+
+            shop.ConnectionString = newConnectionString;
+
             var entity = _mapper.Map<ShopConfig>(shop);
             var entry = await _shopContext.Set<ShopConfig>().AddAsync(entity);
             await _shopContext.SaveChangesAsync();

@@ -8,13 +8,13 @@ namespace Shop.Infrastructure
     public class ShopDbContext : DbContext
     {
         private TenantContext? _tenantContext;
-        private readonly string _schema;
+        private readonly string _connectionString;
         private readonly IConfiguration _configuration;
         private readonly IServiceProvider? _serviceProvider;
 
-        public ShopDbContext(string schema)
+        public ShopDbContext(string connectionString)
         {
-            _schema = schema;
+            _connectionString = connectionString;
         }
 
         public ShopDbContext(IConfiguration configuration, IServiceProvider serviceProvider)
@@ -30,19 +30,12 @@ namespace Shop.Infrastructure
             Database.Migrate();
         }
 
+        public DbSet<Product> Products { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("ShopDb"));
+            var connectionString = _tenantContext?.CurrentShop.ConnectionString ?? _connectionString ?? _configuration.GetConnectionString("ShopDb");
+            optionsBuilder.UseNpgsql(connectionString);
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            var schema = _tenantContext.CurrentShop?.Schema ?? _schema ?? "public";
-            modelBuilder.HasDefaultSchema(schema);
-
-            base.OnModelCreating(modelBuilder);
-        }
-
-        public DbSet<Product> Products { get; set; }
     }
 }

@@ -23,21 +23,21 @@ namespace Admin.Api.Controllers
         public async Task<Result<ShopConfig>> AddAsync(ShopConfig shop)
         {
             var newShop = await _shopsService.AddAsync(shop);
-            if (newShop == null)
+            if (newShop is null)
                 return Result<ShopConfig>.Fail("Failed to create shop.");
 
             #region Shop dbContext migration
             try
             {
                 var optionsBuilder = new DbContextOptionsBuilder<ShopDbContext>();
-                optionsBuilder.UseNpgsql(newShop.Schema);
+                optionsBuilder.UseNpgsql(newShop.ConnectionString);
 
-                using var dbContext = new ShopDbContext(newShop.Schema); // qulaylik uchun overload constructor
+                using var dbContext = new ShopDbContext(newShop.ConnectionString);
                 await dbContext.Database.MigrateAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception($"Shop yaratildi lekin baza yaratilmay qoldi. \n(shop: {JsonSerializer.Serialize(newShop)}).");
+                return Result<ShopConfig>.Fail($"Shop yaratildi lekin baza yaratilmay qoldi. \n(shop: {JsonSerializer.Serialize(newShop)}).");
             }
             #endregion
 
