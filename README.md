@@ -2,6 +2,8 @@
 
 Bu loyiha PostgreSQL ma'lumotlar bazasida **multi-tenant (ko‘p mijozli)** arxitekturani amalga oshirgan `ASP.NET Core Web API` dasturidir. Har bir tenant (do‘kon yoki mijoz) uchun **alohida schema** yaratiladi, bu esa ma’lumotlarni izolyatsiyalash va xavfsizlikni ta’minlaydi.
 
+![multy tenant image](image.png)
+
 ---
 
 ## 📦 Texnologiyalar
