@@ -9,21 +9,20 @@ namespace Marketplace.API.Migrations.Shops
     /// <inheritdoc />
     public partial class Init : Migration
     {
-        private readonly string _schema;
-        public Init(string schema)
-        {
-            _schema = schema;
-        }
+        private readonly IShopDbContext _shopDbContext;
+
+        public Init(IShopDbContext shopDbContext) 
+            => _shopDbContext = shopDbContext;
 
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: _schema);
+                name: _shopDbContext.Schema);
 
             migrationBuilder.CreateTable(
                 name: "Products",
-                schema: _schema,
+                schema: _shopDbContext.Schema,
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -42,7 +41,7 @@ namespace Marketplace.API.Migrations.Shops
         {
             migrationBuilder.DropTable(
                 name: "Products",
-                schema: _schema);
+                schema: _shopDbContext.Schema);
         }
     }
 }

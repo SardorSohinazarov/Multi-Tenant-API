@@ -18,9 +18,7 @@ namespace Marketplace.API
             IDiagnosticsLogger<DbLoggerCategory.Migrations> logger
         )
             : base(currentContext, options, idGenerator, logger)
-        {
-            _context = currentContext.Context;
-        }
+            => _context = currentContext.Context;
 
         public override Migration CreateMigration(TypeInfo migrationClass, string activeProvider)
         {
@@ -30,9 +28,9 @@ namespace Marketplace.API
             }
 
             bool shopDbMigration =
-                migrationClass.GetConstructor(new[] { typeof(ShopDbContext) }) != null;
+                migrationClass.GetConstructor(new[] { typeof(IShopDbContext) }) != null;
 
-            if (shopDbMigration && _context is ShopDbContext storeContext)
+            if (shopDbMigration && _context is IShopDbContext storeContext)
             {
                 Migration? migration = (Migration?)
                     Activator.CreateInstance(migrationClass.AsType(), storeContext);

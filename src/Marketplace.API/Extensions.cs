@@ -7,6 +7,7 @@ namespace Marketplace.API
     {
             public static IServiceCollection AddDataContexts(this IServiceCollection services)
             {
+                services.AddHttpContextAccessor();
                 services.AddDbContext<ShopContext>();
 
                 services.AddScoped(ctx =>
@@ -20,19 +21,36 @@ namespace Marketplace.API
                         return new ShopDbContext(config, new DbContextOptions<ShopDbContext>());
                     }
 
-                    IHttpContextAccessor httpContext =
+                    IHttpContextAccessor httpContextAccessor =
                         ctx.GetService<IHttpContextAccessor>()
                         ?? throw new Exception("HTTP context not accessible");
 
-                    ShopDbContext hqContext =
-                        ctx.GetService<ShopDbContext>() ?? throw new Exception("HQ database not set");
+                    ShopContext shopContext =
+                        ctx.GetService<ShopContext>() ?? throw new Exception("ShopContext database not set");
 
-                    string schema = "sardor";
+                    string schema =
+                        httpContextAccessor.HttpContext?.GetSchemaFromDomain(shopContext)
+                        ?? "public";
 
                     return new ShopDbContext(config, schema);
                 });
 
                 return services;
+        }
+
+        public static string? GetSchemaFromDomain(this HttpContext httpContext, ShopContext shopContext)
+        {
+            string? host = httpContext.Request.Host.Value;
+            if (string.IsNullOrEmpty(host))
+                return null;
+
+            string? schema = shopContext.Shops
+                .AsNoTracking()
+                .Where(x => x.Domain == host)
+                .Select(x => x.Schema)
+                .FirstOrDefault();
+
+            return schema;
         }
 
         public static WebApplication ApplyDbMigrations(this WebApplication app)
@@ -51,9 +69,9 @@ namespace Marketplace.API
         {
             foreach (string schema in hqContext.Shops.AsNoTracking().Select(x => x.Schema).ToList())
             {
-                using ShopDbContext worldContext = new(configuration, schema);
+                using ShopDbContext shopDbContext = new(configuration, schema);
 
-                worldContext.Database.Migrate();
+                shopDbContext.Database.Migrate();
             }
         }
 

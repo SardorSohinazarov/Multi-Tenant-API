@@ -1,29 +1,28 @@
 ﻿using Marketplace.API.Entities;
-using Marketplace.API.Exceptions;
 using Marketplace.API.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using System.Reflection;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Marketplace.API
 {
-    public class ShopDbContext : DbContext
+    public class ShopDbContext : DbContext, IShopDbContext
     {
         private TenantContext? _tenantContext;
-        private readonly string? _schema;
+        public string Schema { get; set; }
         private readonly IConfiguration _configuration;
 
         public ShopDbContext(IConfiguration configuration, DbContextOptions<ShopDbContext> options)
         : base(options)
         {
-            _schema = "public";
+            Schema = "public";
 
             _configuration = configuration;
         }
 
         public ShopDbContext(IConfiguration configuration, string schema)
         {
-            _schema = schema;
+            Schema = schema;
             _configuration = configuration;
         }
 
@@ -35,20 +34,24 @@ namespace Marketplace.API
 
         public DbSet<Product> Products { get; set; }
 
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var connectionString = _configuration.GetConnectionString("ShopDb");
             optionsBuilder.UseNpgsql(connectionString);
 
+            optionsBuilder.ReplaceService<IMigrationsAssembly, ShopDbAssembly>()
+                .ReplaceService<IModelCacheKeyFactory, ShopDbCacheKeyFactory>();
+
             optionsBuilder.UseNpgsql(
                 connectionString,
-                x => x.MigrationsHistoryTable("_migrations", _schema)
+                x => x.MigrationsHistoryTable("_migrations", Schema)
             );
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var schema = _tenantContext?.CurrentShop.Schema ?? _schema ?? "public";
+            var schema = _tenantContext?.CurrentShop.Schema ?? Schema ?? "public";
 
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
 
@@ -67,23 +70,4 @@ namespace Marketplace.API
             base.OnModelCreating(modelBuilder);
         }
     }
-
-    //public class ShopDbContextFactory : IDesignTimeDbContextFactory<ShopDbContext>
-    //{
-    //    public ShopDbContext CreateDbContext(string[] args)
-    //    {
-    //        var configuration = new ConfigurationBuilder()
-    //            .SetBasePath(Directory.GetCurrentDirectory())
-    //            .AddJsonFile("appsettings.json")
-    //            .Build();
-
-    //        // Dizayn vaqti uchun schema nomini qo‘lda belgilang
-    //        var schema = "public";
-
-    //        return new ShopDbContext(schema)
-    //        {
-    //            // _configuration qiymati konstruktor orqali emas, OnConfiguring orqali ishlatiladi
-    //        };
-    //    }
-    //}
 }
