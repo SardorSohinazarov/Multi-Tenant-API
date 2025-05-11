@@ -1,41 +1,62 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Shop.Domain.Entities;
 
-namespace Shop.Infrastructure
+namespace Shop.Infrastructure;
+
+public class ShopDbContext : DbContext, IShopDbContext
 {
-    public class ShopDbContext : DbContext
+    private TenantContext? _tenantContext;
+    public string Schema { get; set; }
+    private readonly IConfiguration _configuration;
+
+    public ShopDbContext(IConfiguration configuration, DbContextOptions<ShopDbContext> options)
+    : base(options)
     {
-        private TenantContext? _tenantContext;
-        private readonly string _connectionString;
-        private readonly IConfiguration _configuration;
-        private readonly IServiceProvider? _serviceProvider;
+        Schema = "public";
+        _configuration = configuration;
+    }
 
-        public ShopDbContext(string connectionString)
+    public ShopDbContext(IConfiguration configuration, string schema)
+    {
+        Schema = schema;
+        _configuration = configuration;
+    }
+
+    public ShopDbContext(IConfiguration configuration, TenantContext tenantContext)
+    {
+        _configuration = configuration;
+        _tenantContext = tenantContext;
+    }
+
+    public DbSet<Product> Products { get; set; }
+
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var connectionString = _configuration.GetConnectionString("ShopDb");
+        optionsBuilder.UseNpgsql(connectionString);
+
+        optionsBuilder.ReplaceService<IMigrationsAssembly, ShopDbAssembly>()
+            .ReplaceService<IModelCacheKeyFactory, ShopDbCacheKeyFactory>();
+
+        optionsBuilder.UseNpgsql(
+            connectionString,
+            x => x.MigrationsHistoryTable("_migrations", Schema)
+        );
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var schema = _tenantContext?.CurrentShop.Schema ?? Schema ?? "public";
+
+        modelBuilder.Entity<Product>(x =>
         {
-            _connectionString = connectionString;
-        }
+            x.Metadata.SetSchema(schema);
+        });
 
-        public ShopDbContext(IConfiguration configuration, IServiceProvider serviceProvider)
-        {
-            _configuration = configuration;
-            _serviceProvider = serviceProvider;
-
-            if (_serviceProvider != null)
-            {
-                _tenantContext = _serviceProvider.GetService<TenantContext>();
-            }
-
-            Database.Migrate();
-        }
-
-        public DbSet<Product> Products { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionString = _tenantContext?.CurrentShop.ConnectionString ?? _connectionString ?? _configuration.GetConnectionString("ShopDb");
-            optionsBuilder.UseNpgsql(connectionString);
-        }
+        base.OnModelCreating(modelBuilder);
     }
 }

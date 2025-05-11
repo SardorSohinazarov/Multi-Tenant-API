@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Common.Paginations.Models;
 using Common;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Admin.Application.Services.Shops;
 using Admin.Domain.Entities;
-using Shop.Infrastructure;
+using Admin.Infrastructure;
 
 namespace Admin.Api.Controllers
 {
@@ -14,9 +13,13 @@ namespace Admin.Api.Controllers
     public class ShopsController : ControllerBase
     {
         private readonly IShopsService _shopsService;
-        public ShopsController(IShopsService shopsService)
+        private readonly IConfiguration _configuration;
+        private readonly ShopContext _shopContext;
+        public ShopsController(IShopsService shopsService, IConfiguration configuration, ShopContext shopContext)
         {
             _shopsService = shopsService;
+            _configuration = configuration;
+            _shopContext = shopContext;
         }
 
         [HttpPost]
@@ -29,11 +32,7 @@ namespace Admin.Api.Controllers
             #region Shop dbContext migration
             try
             {
-                var optionsBuilder = new DbContextOptionsBuilder<ShopDbContext>();
-                optionsBuilder.UseNpgsql(newShop.ConnectionString);
-
-                using var dbContext = new ShopDbContext(newShop.ConnectionString);
-                await dbContext.Database.MigrateAsync();
+                await _shopContext.ApplyDbMigrationsAsync(_configuration);
             }
             catch (Exception ex)
             {

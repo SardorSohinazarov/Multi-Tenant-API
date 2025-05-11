@@ -31,11 +31,11 @@ namespace Admin.Application.Services.Shops
 
         public async Task<ShopConfig> AddAsync(ShopConfig shop)
         {
-            var newConnectionString = string.IsNullOrWhiteSpace(shop.ConnectionString) 
+            var newConnectionString = string.IsNullOrWhiteSpace(shop.Schema) 
                     ? _configuration.GetConnectionString("ShopNewDb").Replace("{{NewDb}}", shop.Name) 
-                    : shop.ConnectionString;
+                    : shop.Schema;
 
-            shop.ConnectionString = newConnectionString;
+            shop.Schema = newConnectionString;
 
             var entity = _mapper.Map<ShopConfig>(shop);
             var entry = await _shopContext.Set<ShopConfig>().AddAsync(entity);

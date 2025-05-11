@@ -60,13 +60,6 @@ namespace Marketplace.API
                 x.Metadata.SetSchema(schema);
             });
 
-            // hamma entitylar uchun
-            //foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            //{
-            //    var a = entityType.GetSchema();
-            //    entityType.SetSchema(schema);
-            //}
-
             base.OnModelCreating(modelBuilder);
         }
     }

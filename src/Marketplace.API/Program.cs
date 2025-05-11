@@ -36,7 +36,8 @@ if (app.Environment.IsDevelopment())
 app.ApplyDbMigrations();
 
 app.UseExceptionHandlingMiddleware();
-app.UseMiddleware<ShopMiddleware>();
+
+app.UseMiddleware<ShopTenantMiddleware>();
 
 app.UseHttpsRedirection();
 

@@ -1,5 +1,7 @@
 using Admin.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Shop.Api.Extensions;
+using Shop.Api.Middlewares;
 using Shop.Application;
 using Shop.Infrastructure;
 
@@ -15,11 +17,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddShopInfrastructure(builder.Configuration);
 
+builder.Services.AddDataContexts();
+
 // TenantContext
 builder.Services.AddDbContext<ShopContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AdminDb")));
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<TenantContext>();
 
 var app = builder.Build();
 
@@ -29,6 +35,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ShopTenantMiddleware>();
 
 app.UseHttpsRedirection();
 

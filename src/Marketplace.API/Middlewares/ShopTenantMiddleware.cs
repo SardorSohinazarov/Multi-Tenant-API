@@ -1,14 +1,13 @@
-﻿using Marketplace.API.Exceptions;
-using Marketplace.API.Models;
+﻿using Marketplace.API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Marketplace.API.Middlewares
 {
-    public class ShopMiddleware
+    public class ShopTenantMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public ShopMiddleware(RequestDelegate next)
+        public ShopTenantMiddleware(RequestDelegate next)
         {
             _next = next;
         }

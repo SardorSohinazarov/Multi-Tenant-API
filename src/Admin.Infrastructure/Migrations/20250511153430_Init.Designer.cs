@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Admin.Infrastructure.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    [Migration("20250504121410_Init")]
+    [Migration("20250511153430_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -32,15 +32,15 @@ namespace Admin.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ConnectionString")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Domain")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Schema")
                         .IsRequired()
                         .HasColumnType("text");
 

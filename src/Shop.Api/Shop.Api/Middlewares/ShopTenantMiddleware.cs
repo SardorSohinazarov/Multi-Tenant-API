@@ -5,11 +5,11 @@ using Shop.Infrastructure;
 
 namespace Shop.Api.Middlewares
 {
-    public class ShopMiddleware
+    public class ShopTenantMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public ShopMiddleware(RequestDelegate next)
+        public ShopTenantMiddleware(RequestDelegate next)
         {
             _next = next;
         }

@@ -7,8 +7,6 @@ namespace Shop.Infrastructure
     {
         public static IServiceCollection AddShopInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ShopDbContext>();
-
             return services;
         }
     }
