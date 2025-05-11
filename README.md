@@ -17,8 +17,8 @@ Bu loyiha PostgreSQL ma'lumotlar bazasida **multi-tenant (ko‘p mijozli)** arxi
 
 ## 🧠 Schema based Multi-Tenancy yondashuvi
 
-- Har bir tenant uchun alohida **PostgreSQL schema** yaratiladi: `tenant1`, `tenant2`, ...
-- EF Core migratsiyasi `IMigrationsAssembly` orqali override qilinib, `schema` parametrli konstruktor qo‘llab-quvvatlanadi.
+- Har bir tenant uchun alohida **PostgreSQL schema** yaratiladi: `shop1`, `shop2`, ...
+- Migrationlarni har biri default holatda `public` schema bilan ishlaydi yani Entity framework orqali bu hal qilinmagan muammo. Shuning uchun EF Core migratsiyasi `IMigrationsAssembly` orqali override qilinib, `schema` parametrli konstruktor qo‘llab-quvvatlanadi.
 - Admin databaseda Shops tableda Shoplarni malumotlari `ShopContext` orqali saqlaydi.
 - Shop databaseda har bir tenant o‘z `Products` jadvaliga ega, umumiy `ShopDbContext` orqali ishlaydi.
 
@@ -42,7 +42,7 @@ Bu loyiha PostgreSQL ma'lumotlar bazasida **multi-tenant (ko‘p mijozli)** arxi
 
 - Tenantlarni yaratish, ro'yxatdan o'tkazish va ularga schema ajratib tablelarni yaratish imkonini beradi.
 
-### 🏪 [Shop.Api](https://github.com/SardorSohinazarov/Multi-Tenant-API/tree/master/src/Shop.Api/Shop.Api)
+### 🛒 [Shop.Api](https://github.com/SardorSohinazarov/Multi-Tenant-API/tree/master/src/Shop.Api/Shop.Api)
 
 - Har bir tenant (ya'ni do‘kon) uchun izolyatsiyalangan REST API.
 - Domain orqali qaysi schema bilan ishlash aniqlanadi.
