@@ -19,7 +19,8 @@ Bu loyiha PostgreSQL ma'lumotlar bazasida **multi-tenant (ko‘p mijozli)** arxi
 
 - Har bir tenant uchun alohida **PostgreSQL schema** yaratiladi: `tenant1`, `tenant2`, ...
 - EF Core migratsiyasi `IMigrationsAssembly` orqali override qilinib, `schema` parametrli konstruktor qo‘llab-quvvatlanadi.
-- Har bir tenant o‘z `Products` jadvaliga ega, umumiy `ShopContext` orqali ishlaydi.
+- Admin databaseda Shops tableda Shoplarni malumotlari `ShopContext` orqali saqlaydi.
+- Shop databaseda har bir tenant o‘z `Products` jadvaliga ega, umumiy `ShopDbContext` orqali ishlaydi.
 
 ---
 
@@ -30,7 +31,7 @@ Bu loyiha PostgreSQL ma'lumotlar bazasida **multi-tenant (ko‘p mijozli)** arxi
 - Sodda va tushunarli holda service, controller, dbcontext sozlamalari va bir nechta extensionlar bor.
 - `ShopTenantMiddleware`, `IMigrationsAssembly` kabi interfeys va implementatsiyalar mavjud.
 - Shops va Products controllerlari orqali hammasi boshqariladi.
-- Shops controller - shop yaratish orqali automatic database schema ham yaratadi.
+- Shops controller - (admin o'rnida) shop yaratish orqali automatic database schema ham yaratadi.
 - Marketplace controller - productlarni crud qilish uchun ishlaydi.
 
 ---
