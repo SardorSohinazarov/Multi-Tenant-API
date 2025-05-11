@@ -1,5 +1,6 @@
 using Admin.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Middlewares;
 using Shop.Api.Extensions;
 using Shop.Api.Middlewares;
 using Shop.Application;
@@ -37,6 +38,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ShopTenantMiddleware>();
+
+app.UseExceptionHandlingMiddleware();
 
 app.UseHttpsRedirection();
 
